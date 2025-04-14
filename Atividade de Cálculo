@@ -137,3 +137,431 @@ APP.CSS
 .read-the-docs {
   color: #888;
 }
+
+Parte 2
+INDEX.HTML
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo de Matemática</title>
+    <style>
+        .app {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #9370DB; /* Roxo Médio */
+            font-family: sans-serif;
+            color: white;
+            padding: 20px;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #9370DB; /* Roxo Médio */
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .pontos {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .botao-sortear {
+            padding: 12px 24px;
+            background-color: #6A5ACD; /* Azul Violeta */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-bottom: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .botao-sortear:hover {
+            background-color: #483D8B; /* Azul Violeta Escuro */
+        }
+
+        .pergunta {
+            font-size: 20px;
+            margin-bottom: 15px;
+        }
+
+        .numeros {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .numero {
+            font-size: 30px;
+            margin: 0 15px;
+            padding: 10px 20px;
+            background-color: #8A2BE2; /* Violeta */
+            border-radius: 8px;
+        }
+
+        .operador {
+            font-size: 30px;
+            margin: 0 10px;
+        }
+
+        .resposta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 25px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .resposta-label {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .resposta {
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 18px;
+            width: 100%;
+            text-align: center;
+            background-color: #E0BBE3; /* Lavanda */
+            color: #333;
+        }
+
+        .botoes-acao {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            max-width: 250px;
+        }
+
+        .botao-validar {
+            padding: 12px 24px;
+            background-color: #4CAF50; /* Verde */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .botao-validar:hover {
+            background-color: #45a049; /* Verde Escuro */
+        }
+
+        .botao-novo-jogo {
+            padding: 12px 24px;
+            background-color: #F44336; /* Vermelho */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .botao-novo-jogo:hover {
+            background-color: #d32f2f; /* Vermelho Escuro */
+        }
+
+        .mensagem {
+            font-size: 18px;
+            margin-top: 20px;
+            color: yellow;
+        }
+
+        .data {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/javascript">
+        function App() {
+            const [pontos, setPontos] = React.useState(0);
+            const [numero1, setNumero1] = React.useState(50); // Valor fixo da imagem
+            const [numero2, setNumero2] = React.useState(9);  // Valor fixo da imagem
+            const [operador, setOperador] = React.useState('+'); // Valor fixo da imagem
+            const [resposta, setResposta] = React.useState('59'); // Valor fixo da imagem
+            const [mensagem, setMensagem] = React.useState('');
+
+            const gerarNovoDesafio = () => {
+                // Como os valores na imagem são fixos, esta função não fará nada de diferente aqui.
+                // Em uma aplicação real, geraria novos números e operador.
+                setMensagem('Novo desafio (os números estão fixos como na imagem)');
+            };
+
+            const validarResposta = () => {
+                const respostaInt = parseInt(resposta);
+                let respostaCorreta;
+                switch (operador) {
+                    case '+':
+                        respostaCorreta = numero1 + numero2;
+                        break;
+                    case '-':
+                        respostaCorreta = numero1 - numero2;
+                        break;
+                    case '*':
+                        respostaCorreta = numero1 * numero2;
+                        break;
+                    case '/':
+                        respostaCorreta = numero1 / numero2;
+                        break;
+                    default:
+                        respostaCorreta = 0;
+                }
+
+                if (!isNaN(respostaInt) && respostaInt === respostaCorreta) {
+                    setPontos(pontos + 10);
+                    setMensagem('Resposta correta!');
+                } else {
+                    setMensagem('Resposta incorreta.');
+                }
+            };
+
+            const reiniciarJogo = () => {
+                setPontos(0);
+                setNumero1(Math.floor(Math.random() * 100) + 1);
+                setNumero2(Math.floor(Math.random() * 100) + 1);
+                const operadores = ['+', '-', '*', '/'];
+                setOperador(operadores[Math.floor(Math.random() * operadores.length)]);
+                setResposta('');
+                setMensagem('');
+            };
+
+            return (
+                <div className="app">
+                    <div className="container">
+                        <div className="data">07/08/2022</div>
+                        <p className="pontos">Você tem {pontos} pontos</p>
+                        <button className="botao-sortear" onClick={gerarNovoDesafio}>Sortear Desafio</button>
+                        <p className="pergunta">Quanto é :</p>
+                        <div className="numeros">
+                            <p className="numero">{numero1}</p>
+                            <p className="operador">{operador}</p>
+                            <p className="numero">{numero2}</p>
+                        </div>
+                        <div className="resposta-container">
+                            <label htmlFor="resposta" className="resposta-label">Sua Resposta :</label>
+                            <input
+                                type="number"
+                                id="resposta"
+                                className="resposta"
+                                placeholder="Sua Resposta:"
+                                value={resposta}
+                                onChange={(e) => setResposta(e.target.value)}
+                            />
+                        </div>
+                        <div className="botoes-acao">
+                            <button className="botao-validar" onClick={validarResposta}>Validar</button>
+                            <button className="botao-novo-jogo" onClick={reiniciarJogo}>Novo Jogo</button>
+                        </div>
+                        {mensagem && <p className="mensagem">{mensagem}</p>}
+                    </div>
+                </div>
+            );
+        }
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+</body>
+</html>
+
+APP.JSX
+
+import React, { useState } from 'react';
+import './App.css'; // Importe o arquivo CSS
+
+function App() {
+  const [pontos, setPontos] = useState(0);
+  const [numero1, setNumero1] = useState(Math.floor(Math.random() * 100) + 1);
+  const [numero2, setNumero2] = useState(Math.floor(Math.random() * 100) + 1);
+  const [operador, setOperador] = useState('+'); // Operador inicial
+  const [resposta, setResposta] = useState('');
+  const [mensagem, setMensagem] = useState('');
+
+  const gerarNovoDesafio = () => {
+    setNumero1(Math.floor(Math.random() * 100) + 1);
+    setNumero2(Math.floor(Math.random() * 100) + 1);
+    const operadores = ['+', '-', '*', '/'];
+    setOperador(operadores[Math.floor(Math.random() * operadores.length)]);
+    setResposta('');
+    setMensagem('');
+  };
+
+  const validarResposta = () => {
+    const respostaInt = parseInt(resposta);
+    let respostaCorreta;
+    switch (operador) {
+      case '+':
+        respostaCorreta = numero1 + numero2;
+        break;
+      case '-':
+        respostaCorreta = numero1 - numero2;
+        break;
+      case '/':
+        respostaCorreta = numero1 / numero2;
+        break;
+      case '*':
+        respostaCorreta = numero1 * numero2;
+        break;
+      default:
+        respostaCorreta = 0;
+    }
+    if (!isNaN(respostaInt) && respostaInt === respostaCorreta) {
+      setPontos(pontos + 10);
+      setMensagem('Resposta correta!');
+      gerarNovoDesafio();
+    } else {
+      setMensagem('Resposta incorreta.');
+    }
+  };
+
+  const reiniciarJogo = () => {
+    setPontos(0);
+    gerarNovoDesafio();
+  };
+
+  return (
+    <div className="App">
+      <div className="container">
+        <p className="pontos">Você tem {pontos} pontos</p>
+        <button className="botao-sortear" onClick={gerarNovoDesafio}>Sortear Desafio</button>
+        <p className="pergunta">Quanto é:</p>
+        <div className="numeros">
+          <p className="numero">{numero1}</p>
+          <p className="operador">{operador}</p>
+          <p className="numero">{numero2}</p>
+        </div>
+        <input
+          type="number"
+          className="resposta"
+          placeholder="Sua Resposta:"
+          value={resposta}
+          onChange={(e) => setResposta(e.target.value)}
+        />
+        <button className="botao-validar" onClick={validarResposta}>Validar</button>
+        <button className="botao-novo-jogo" onClick={reiniciarJogo}>Novo Jogo</button>
+        {mensagem && <p className="mensagem">{mensagem}</p>}
+      </div>
+    </div>
+  );
+}
+
+export default App;
+
+
+APP.CSS
+
+
+
+.App {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #9370DB;
+  font-family: sans-serif;
+  color: white;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #9370DB;
+  border-radius: 10px;
+}
+
+.pontos {
+  font-size: 20px;
+  margin-bottom: 20px;
+}
+
+.botao-sortear {
+  padding: 10px 20px;
+  background-color: #6A5ACD;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.pergunta {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.numeros {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.numero {
+  font-size: 24px;
+  margin: 0 10px;
+}
+
+.operador {
+  font-size: 24px;
+  margin: 0 10px;
+}
+
+.resposta {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  width: 200px;
+}
+
+.botao-validar {
+  padding: 10px 20px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.botao-novo-jogo {
+  padding: 10px 20px;
+  background-color: #F44336;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.mensagem {
+  font-size: 16px;
+  margin-top: 10px;
+  color: yellow;
+}
